@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <title>Annotation Tracker</title>
+
+        <link rel="stylesheet" href="./styles/tailwind.css" />
+
+        <script src="./popup.js" defer></script>
+    </head>
+
+    <body class="bg-white w-[640px] text-[#49305E]">
+        <div class="p-5 max-h-[720px] overflow-y-auto">
+            <!-- HEADER -->
+            <header class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="flex justify-center items-center bg-[#F2EAF7] rounded-xl w-11 h-11">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="25"
+                            height="25"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#684381"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M3 3v18h18" />
+                            <path d="m19 9-5 5-4-4-5 5" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h1 class="font-bold text-[#49305E] text-lg tracking-tight">Annotation Tracker</h1>
+
+                        <p class="text-[#9686A3] text-xs">Theo dõi tiến độ công việc</p>
+                    </div>
+                </div>
+
+                <button
+                    id="refresh-button"
+                    type="button"
+                    title="Làm mới dữ liệu"
+                    class="flex justify-center items-center hover:bg-[#F6F1F9] border border-[#EAE3EF] rounded-lg w-9 h-9 text-[#76568B] transition"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="17"
+                        height="17"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M20 7v5h-5" />
+                        <path d="M4 17v-5h5" />
+                        <path d="M5.64 9a8 8 0 0 1 13.13-2L20 12" />
+                        <path d="M4 12l1.23 5A8 8 0 0 0 18.36 15" />
+                    </svg>
+                </button>
+            </header>
+
+            <!-- CURRENT TASK -->
+            <section
+                class="bg-white shadow-[0_3px_16px_rgba(73,48,94,0.06)] mb-6 px-5 py-3 border border-[#E8DFF0] rounded-2xl"
+            >
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-[#967DA8] text-[11px] uppercase tracking-[1.5px]">
+                        Công việc hiện tại
+                    </span>
+
+                    <span
+                        class="flex items-center gap-1.5 bg-[#F1EAF5] px-2.5 py-1 rounded-full font-semibold text-[#684381] text-[10px]"
+                    >
+                        <span class="bg-[#80609A] rounded-full w-1.5 h-1.5"></span>
+
+                        ĐANG THEO DÕI
+                    </span>
+                </div>
+
+                <p class="mb-2 font-medium text-[#8B7A98] text-sm">Task đang làm:</p>
+
+                <h2 id="current-task-line" class="font-bold text-[#52336C] text-[18px] tracking-tight">
+                    Đang tải dữ liệu...
+                </h2>
+
+                <div class="flex justify-between items-center mt-4 pt-3 border-[#F0EBF3] border-t">
+                    <p id="current-task-meta" class="text-[#94869E] text-xs">Đang đọc dữ liệu frame...</p>
+
+                    <!-- <span class="font-medium text-[#76568B] text-xs"> Object </span> -->
+                </div>
+            </section>
+
+            <!-- TASK HISTORY -->
+            <section>
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <h2 class="font-bold text-[#49305E] text-base">Danh sách thống kê</h2>
+
+                        <p class="mt-1 text-[#9B8EA4] text-[11px]">Tổng hợp dữ liệu các Task đã ghi nhận</p>
+                    </div>
+
+                    <span
+                        id="task-total"
+                        class="bg-[#F4EEF7] px-2.5 py-1 rounded-lg font-semibold text-[#684381] text-xs"
+                    >
+                        0 Task
+                    </span>
+                </div>
+
+                <!-- TABLE -->
+                <div class="border border-[#EAE5EE] rounded-xl overflow-hidden">
+                    <table class="w-full text-left border-collapse table-fixed">
+                        <thead class="bg-[#F4F0F7]">
+                            <tr class="font-semibold text-[#6E527F] text-[11px]">
+                                <th class="px-3 py-3 w-[27%]">Task ID</th>
+
+                                <th class="px-2 py-3 w-[27%]">Ngày bắt đầu</th>
+
+                                <th class="px-2 py-3 w-[20%] text-right">Số Obj</th>
+
+                                <th class="px-3 py-3 w-[26%] text-right">Thành tiền (₫)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="task-table-body">
+                            <tr>
+                                <td colspan="4" class="px-3 py-8 text-[#A397AD] text-sm text-center">
+                                    Đang tải dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="flex justify-between items-center mt-5 pt-4 border-[#EEE8F2] border-t">
+                <p class="text-[#A396AD] text-[10px]">Annotation Tracker · Dinh Khang</p>
+
+                <p id="last-updated" class="text-[#A396AD] text-[10px]">Chưa cập nhật</p>
+            </footer>
+        </div>
+    </body>
+</html>
