@@ -1,10 +1,9 @@
 console.log('[BACKGROUND] Service worker loaded')
 
 // ==========================================
-// 0. HÀNG ĐỢI GHI DỮ LIỆU TASK
-// Hạn chế nhiều thao tác ghi cùng Task bị xung đột
+// 0. QUEUE WHITE TASK DATA
+// Minimize conflicts caused by multiple write operations on the same Task
 // ==========================================
-
 const taskWriteQueues = new Map()
 
 function enqueueTaskWrite(taskId, operation) {
@@ -22,17 +21,15 @@ function enqueueTaskWrite(taskId, operation) {
 }
 
 // ==========================================
-// 1. XỬ LÝ MESSAGE TỪ BRIDGE.JS
+// 1. PROCESS MESSAGE FROM BRIDGE.JS
 // ==========================================
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const tabId = sender.tab?.id
 
     // ==========================================
     // 2. TASK_CAPTURED
-    // Nhận Task ID sau khi upload JSON
+    // Captured Task ID after upload JSON
     // ==========================================
-
     if (message?.type === 'TASK_CAPTURED') {
         if (tabId === undefined || !message.taskId || typeof message.taskId !== 'string') {
             sendResponse({
@@ -104,9 +101,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // ==========================================
     // 3. SAVE_FRAME_STAT
-    // Lưu hoặc cập nhật thông tin frame
+    // Save or update frame data
     // ==========================================
-
     if (message?.type === 'SAVE_FRAME_STAT') {
         if (tabId === undefined) {
             sendResponse({
@@ -153,9 +149,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         })
 
         // --------------------------------------
-        // Lấy Task ID tương ứng với tab
+        // Get Task ID corresponding to tab
         // --------------------------------------
-
         chrome.storage.session
             .get(sessionKey)
             .then(async (result) => {
@@ -219,9 +214,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     }
 
                     // --------------------------------------
-                    // Lưu Task vào chrome.storage.local
+                    // Save Task  to local
                     // --------------------------------------
-
                     await chrome.storage.local.set({
                         [taskId]: taskRecord
                     })

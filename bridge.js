@@ -1,12 +1,12 @@
 console.log('[BRIDGE] Installed')
 
 // ==========================================
-// 1. Đọc thông tin frame và số lượng object
+// 1. Read frame date
 // ==========================================
 function readFrameData() {
     const frameInput = document.querySelector('input.w-10.rounded-md')
 
-    // Tìm số lượng object, ví dụ: "Objects (38/38)"
+    // Fint object count, ex: "Objects (38/38)"
     const objectElement = [...document.querySelectorAll('span')].find((el) =>
         /^Objects\s*\(\d+\/\d+\)$/.test(el.textContent.trim())
     )
@@ -48,12 +48,10 @@ function readTotalFrame() {
 }
 
 // ==========================================
-// 2. Gửi dữ liệu frame sang background.js
+// 2. Send data frame to background.js
 // ==========================================
 function saveCurrentFrame(frameData = readFrameData()) {
     if (!frameData) return
-
-    // console.log('[BRIDGE] Saving frame:', frameData)
 
     chrome.runtime.sendMessage(
         {
@@ -72,7 +70,7 @@ function saveCurrentFrame(frameData = readFrameData()) {
 }
 
 // ==========================================
-// 3. Xử lý click Next / Prev / SAVE FRAME
+// 3. Handle click Next / Prev / SAVE FRAME
 // ==========================================
 document.addEventListener(
     'click',
@@ -94,7 +92,7 @@ document.addEventListener(
 )
 
 // ==========================================
-// 4. Nhận Task ID từ page-hook.js
+// 4. Receive Task ID from page-hook.js
 // ==========================================
 window.addEventListener('message', (event) => {
     if (event.source !== window) return

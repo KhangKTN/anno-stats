@@ -36,10 +36,14 @@ function formatDate(value) {
     }).format(date)
 }
 
+function calcMoney(objCount) {
+    const unitPrice = 450
+    return formatNumber(objCount * 450)
+}
+
 // ==========================================
 // 3. CALCULATE TOTAL OBJECTS
 // ==========================================
-
 function getTotalObjects(task) {
     if (!Array.isArray(task.frames)) {
         return 0
@@ -58,9 +62,8 @@ function getTotalObjects(task) {
 
 // ==========================================
 // 4. GET CURRENT TASK ID
-// Theo tab đang mở
+// Lollow tab is opening
 // ==========================================
-
 async function getCurrentTaskId() {
     const tabs = await chrome.tabs.query({
         active: true,
@@ -82,9 +85,8 @@ async function getCurrentTaskId() {
 
 // ==========================================
 // 5. CREATE TABLE CELL
-// Dùng textContent để tránh chèn HTML từ dữ liệu
+// Use textContent to avoid insert HTML from date
 // ==========================================
-
 function createCell(value, className = '') {
     const td = document.createElement('td')
 
@@ -97,11 +99,10 @@ function createCell(value, className = '') {
 // ==========================================
 // 6. RENDER TASK TABLE
 // ==========================================
-
 function renderTaskTable(tasks) {
     taskTableBody.replaceChildren()
 
-    // Sắp xếp Task mới nhất lên đầu
+    // Sort last task
     tasks.sort((a, b) => {
         const dateA = Date.parse(a.createdAt || '') || 0
         const dateB = Date.parse(b.createdAt || '') || 0
@@ -109,16 +110,12 @@ function renderTaskTable(tasks) {
         return dateB - dateA
     })
 
-    taskTotal.textContent = `${tasks.length} Task`
-
     if (tasks.length === 0) {
         const tr = document.createElement('tr')
         const td = document.createElement('td')
 
         td.colSpan = 4
-
         td.className = 'px-3 py-10 text-center text-sm text-[#A397AD]'
-
         td.textContent = 'Chưa có dữ liệu thống kê.'
 
         tr.appendChild(td)
@@ -128,11 +125,12 @@ function renderTaskTable(tasks) {
     }
 
     const fragment = document.createDocumentFragment()
+    let allTaskObj = 0
 
     tasks.forEach((task) => {
         const tr = document.createElement('tr')
 
-        // Hàng trắng và xám xen kẽ kiểu macOS
+        // Row white - gray like macOS
         tr.className = [
             'border-t',
             'border-[#EEEAF1]',
@@ -143,17 +141,18 @@ function renderTaskTable(tasks) {
         ].join(' ')
 
         const totalObj = getTotalObjects(task)
+        allTaskObj += totalObj
 
-        // Cột 1: Task ID
+        // Col 1: Task ID
         const taskIdCell = createCell(task.taskId, 'font-semibold text-[#624276] truncate')
 
-        // Cột 2: Ngày bắt đầu
+        // Col 2: Start date
         const dateCell = createCell(formatDate(task.createdAt), 'text-[#84788C]')
 
-        // Cột 3: Tổng Object
+        // Col 3: Sum obj of task
         const objectCell = createCell(formatNumber(totalObj), 'text-right font-semibold tabular-nums text-[#624276]')
 
-        // Cột 4: Thành tiền
+        // Col 4: Money
         const amountCell = createCell(
             formatNumber(totalObj * 450),
             'text-right font-medium tabular-nums text-[#84788C]'
@@ -165,12 +164,13 @@ function renderTaskTable(tasks) {
     })
 
     taskTableBody.appendChild(fragment)
+
+    taskTotal.textContent = `${tasks.length} Task • ${allTaskObj} Obj • ${calcMoney(allTaskObj)} ₫`
 }
 
 // ==========================================
 // 7. RENDER CURRENT TASK
 // ==========================================
-
 function renderCurrentTask(taskId, task) {
     if (!taskId) {
         currentTaskLine.textContent = `Chưa có Task đang làm.`
@@ -202,20 +202,17 @@ function renderCurrentTask(taskId, task) {
 // ==========================================
 // 8. LOAD DASHBOARD DATA
 // ==========================================
-
 async function loadDashboard() {
     try {
         console.log('[POPUP] Loading dashboard...')
 
-        // Lấy Task ID của tab hiện tại
         const currentTaskId = await getCurrentTaskId()
 
-        // Lấy toàn bộ dữ liệu Task
         const storageData = await chrome.storage.local.get(null)
 
-        // Chỉ lấy các record có cấu trúc Task hợp lệ
+        // Get record
         const tasks = Object.entries(storageData)
-            .filter(([key, value]) => {
+            .filter(([_, value]) => {
                 return (
                     value &&
                     typeof value === 'object' &&
@@ -228,25 +225,17 @@ async function loadDashboard() {
                 taskId: value.taskId || key
             }))
 
-        // Tìm Task đang làm
         const currentTask = currentTaskId ? storageData[currentTaskId] : null
 
-        // Hiển thị giao diện
         renderCurrentTask(currentTaskId, currentTask)
-
         renderTaskTable(tasks)
 
-        // Cập nhật thời gian làm mới
+        // Update refresh time
         lastUpdated.textContent = `Cập nhật: ${new Intl.DateTimeFormat('vi-VN', {
             hour: '2-digit',
             minute: '2-digit',
             timeZone: 'Asia/Ho_Chi_Minh'
         }).format(new Date())}`
-
-        console.log('[POPUP] Dashboard loaded:', {
-            currentTaskId,
-            taskCount: tasks.length
-        })
     } catch (error) {
         console.error('[POPUP] Load error:', error)
 
