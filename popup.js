@@ -1,5 +1,5 @@
 // ==========================================
-// 1. DOM ELEMENTS
+// DOM ELEMENTS
 // ==========================================
 const currentTaskLine = document.getElementById('current-task-line')
 const currentTaskMeta = document.getElementById('current-task-meta')
@@ -9,9 +9,10 @@ const taskTotal = document.getElementById('task-total')
 
 const lastUpdated = document.getElementById('last-updated')
 const refreshButton = document.getElementById('refresh-button')
+const themeToggle = document.getElementById('theme-toggle')
 
 // ==========================================
-// 2. FORMATTERS
+// FORMATTERS
 // ==========================================
 const numberFormatter = new Intl.NumberFormat('vi-VN')
 
@@ -42,7 +43,7 @@ function calcMoney(objCount) {
 }
 
 // ==========================================
-// 3. CALCULATE TOTAL OBJECTS
+// CALCULATE TOTAL OBJECTS
 // ==========================================
 function getTotalObjects(task) {
     if (!Array.isArray(task.frames)) {
@@ -61,7 +62,7 @@ function getTotalObjects(task) {
 }
 
 // ==========================================
-// 4. GET CURRENT TASK ID
+// GET CURRENT TASK ID
 // Lollow tab is opening
 // ==========================================
 async function getCurrentTaskId() {
@@ -84,20 +85,20 @@ async function getCurrentTaskId() {
 }
 
 // ==========================================
-// 5. CREATE TABLE CELL
+// CREATE TABLE CELL
 // Use textContent to avoid insert HTML from date
 // ==========================================
 function createCell(value, className = '') {
     const td = document.createElement('td')
 
-    td.className = `px-3 py-3 text-xs text-[#554463] ${className}`
+    td.className = `px-3 py-3 text-xs text-[#684381] dark:text-[#D2C3DF] ${className}`
     td.textContent = value
 
     return td
 }
 
 // ==========================================
-// 6. RENDER TASK TABLE
+// RENDER TASK TABLE
 // ==========================================
 function renderTaskTable(tasks) {
     taskTableBody.replaceChildren()
@@ -134,29 +135,39 @@ function renderTaskTable(tasks) {
         tr.className = [
             'border-t',
             'border-[#EEEAF1]',
+            'dark:border-[#2B3945]',
+
             'odd:bg-white',
             'even:bg-[#F5F4F6]',
+
+            'dark:odd:bg-[#18232D]',
+            'dark:even:bg-[#202D38]',
+
             'hover:bg-[#F0EAF5]',
-            'transition-colors'
+            'dark:hover:bg-[#293744]',
+
+            'text-[#684381]',
+            'dark:text-[#D2C3DF]',
+
+            'transition-colors',
+            'flex',
+            'w-full'
         ].join(' ')
 
         const totalObj = getTotalObjects(task)
         allTaskObj += totalObj
 
         // Col 1: Task ID
-        const taskIdCell = createCell(task.taskId, 'font-semibold text-[#624276] truncate')
+        const taskIdCell = createCell(task.taskId, 'font-semibold truncate w-[27%]')
 
         // Col 2: Start date
-        const dateCell = createCell(formatDate(task.createdAt), 'text-[#84788C]')
+        const dateCell = createCell(formatDate(task.createdAt), 'w-[27%]')
 
         // Col 3: Sum obj of task
-        const objectCell = createCell(formatNumber(totalObj), 'text-right font-semibold tabular-nums text-[#624276]')
+        const objectCell = createCell(formatNumber(totalObj), 'text-right font-semibold tabular-nums w-[20%]')
 
         // Col 4: Money
-        const amountCell = createCell(
-            formatNumber(totalObj * 450),
-            'text-right font-medium tabular-nums text-[#84788C]'
-        )
+        const amountCell = createCell(formatNumber(totalObj * 450), 'text-right font-medium tabular-nums w-[26%]')
 
         tr.append(taskIdCell, dateCell, objectCell, amountCell)
 
@@ -169,7 +180,7 @@ function renderTaskTable(tasks) {
 }
 
 // ==========================================
-// 7. RENDER CURRENT TASK
+// RENDER CURRENT TASK
 // ==========================================
 function renderCurrentTask(taskId, task) {
     if (!taskId) {
@@ -194,13 +205,16 @@ function renderCurrentTask(taskId, task) {
 
     if (totalFrames > 0) {
         currentTaskMeta.textContent = `Đã ghi nhận ${savedFrames}/${totalFrames} frame`
+        if (savedFrames === totalFrames) {
+            currentTaskMeta.parentElement.querySelector('svg').removeAttribute('hidden')
+        }
     } else {
         currentTaskMeta.textContent = `Đã ghi nhận ${savedFrames} frame`
     }
 }
 
 // ==========================================
-// 8. LOAD DASHBOARD DATA
+// LOAD DASHBOARD DATA
 // ==========================================
 async function loadDashboard() {
     try {
@@ -260,7 +274,46 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     }
 })
 
+// =========================================
+// THEME
+// =========================================
+function setTheme(theme) {
+    const isDark = theme === 'dark'
+
+    // Update UI
+    document.documentElement.classList.toggle('dark', isDark)
+
+    // Save choice
+    localStorage.setItem('theme', theme)
+
+    // Update tooltip
+    if (themeToggle) {
+        const nextTheme = isDark ? 'Light' : 'Dark'
+
+        themeToggle.title = `Chuyển sang ${nextTheme} Mode`
+        themeToggle.setAttribute('aria-label', `Chuyển sang ${nextTheme} Mode`)
+    }
+}
+
+function initTheme() {
+    if (!themeToggle) return
+
+    const savedTheme = localStorage.getItem('theme')
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)')
+    const initialTheme = savedTheme || (systemDark.matches ? 'dark' : 'light')
+
+    console.log(systemDark)
+
+    setTheme(initialTheme)
+
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark')
+        setTheme(isDark ? 'light' : 'dark')
+    })
+}
+
 // ==========================================
-// 11. INITIALIZE
+// INITIALIZE
 // ==========================================
 loadDashboard()
+initTheme()

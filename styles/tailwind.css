@@ -202,8 +202,14 @@
   .mb-6 {
     margin-bottom: calc(var(--spacing) * 6);
   }
+  .block {
+    display: block;
+  }
   .flex {
     display: flex;
+  }
+  .hidden {
+    display: none;
   }
   .h-1\.5 {
     height: calc(var(--spacing) * 1.5);
@@ -216,6 +222,9 @@
   }
   .max-h-\[720px\] {
     max-height: 720px;
+  }
+  .max-h-\[calc\(40px\*7\)\] {
+    max-height: calc(40px * 7);
   }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
@@ -247,6 +256,12 @@
   .border-collapse {
     border-collapse: collapse;
   }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
   .items-center {
     align-items: center;
   }
@@ -262,8 +277,17 @@
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
   }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
   .gap-3 {
     gap: calc(var(--spacing) * 3);
+  }
+  .gap-x-1 {
+    column-gap: var(--spacing);
+  }
+  .gap-x-2 {
+    column-gap: calc(var(--spacing) * 2);
   }
   .truncate {
     overflow: hidden;
@@ -402,12 +426,6 @@
   .text-\[18px\] {
     font-size: 18px;
   }
-  .text-\[20px\] {
-    font-size: 20px;
-  }
-  .text-\[22px\] {
-    font-size: 22px;
-  }
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
@@ -494,6 +512,10 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
+  .duration-200 {
+    --tw-duration: 200ms;
+    transition-duration: 200ms;
+  }
   .odd\:bg-white:nth-child(odd) {
     background-color: var(--color-white);
   }
@@ -506,6 +528,66 @@
     }
     .hover\:bg-\[\#F6F1F9\]:hover {
       background-color: #F6F1F9;
+    }
+  }
+  .dark\:block:where(.dark, .dark *) {
+    display: block;
+  }
+  .dark\:hidden:where(.dark, .dark *) {
+    display: none;
+  }
+  .dark\:border-\[\#2B3945\]:where(.dark, .dark *) {
+    border-color: #2B3945;
+  }
+  .dark\:bg-\[\#202D38\]:where(.dark, .dark *) {
+    background-color: #202D38;
+  }
+  .dark\:bg-\[\#18232D\]:where(.dark, .dark *) {
+    background-color: #18232D;
+  }
+  .dark\:bg-\[\#101820\]:where(.dark, .dark *) {
+    background-color: #101820;
+  }
+  .dark\:bg-\[\#293744\]:where(.dark, .dark *) {
+    background-color: #293744;
+  }
+  .dark\:text-\[\#AFA0BE\]:where(.dark, .dark *) {
+    color: #AFA0BE;
+  }
+  .dark\:text-\[\#B7A6C7\]:where(.dark, .dark *) {
+    color: #B7A6C7;
+  }
+  .dark\:text-\[\#C49AE5\]:where(.dark, .dark *) {
+    color: #C49AE5;
+  }
+  .dark\:text-\[\#D2C3DF\]:where(.dark, .dark *) {
+    color: #D2C3DF;
+  }
+  .dark\:text-\[\#D5C1E5\]:where(.dark, .dark *) {
+    color: #D5C1E5;
+  }
+  .dark\:text-\[\#E9D9F5\]:where(.dark, .dark *) {
+    color: #E9D9F5;
+  }
+  .dark\:text-\[\#EBD5FF\]:where(.dark, .dark *) {
+    color: #EBD5FF;
+  }
+  .dark\:shadow-\[0_3px_16px_rgba\(0\,0\,0\,0\.15\)\]:where(.dark, .dark *) {
+    --tw-shadow: 0 3px 16px var(--tw-shadow-color, rgba(0,0,0,0.15));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .dark\:odd\:bg-\[\#18232D\]:where(.dark, .dark *):nth-child(odd) {
+    background-color: #18232D;
+  }
+  .dark\:even\:bg-\[\#202D38\]:where(.dark, .dark *):nth-child(even) {
+    background-color: #202D38;
+  }
+  @media (hover: hover) {
+    .dark\:hover\:bg-\[\#253440\]:where(.dark, .dark *):hover {
+      background-color: #253440;
+    }
+    .dark\:hover\:bg-\[\#293744\]:where(.dark, .dark *):hover {
+      background-color: #293744;
     }
   }
 }
@@ -607,6 +689,10 @@
   inherits: false;
   initial-value: 0 0 #0000;
 }
+@property --tw-duration {
+  syntax: "*";
+  inherits: false;
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: block))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -632,6 +718,7 @@
       --tw-ring-offset-width: 0px;
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-duration: initial;
     }
   }
 }

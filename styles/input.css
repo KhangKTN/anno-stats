@@ -1,4 +1,6 @@
 @import "tailwindcss";
 
+/* Dark mode được điều khiển bằng class .dark */
+@custom-variant dark (&:where(.dark, .dark *));
 @source "../popup.html";
 @source "../popup.js";
